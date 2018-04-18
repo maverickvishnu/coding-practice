@@ -1,0 +1,53 @@
+
+buildscript {
+	ext {
+		springBootVersion = '1.5.10.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath('gradle.plugin.com.palantir.gradle.docker:gradle-docker:0.19.2')
+		classpath('org.springframework.boot:spring-boot-gradle-plugin:1.2.5.RELEASE')
+	}	
+}
+
+	plugins {
+  		id "com.palantir.docker" version "0.19.2"
+    }
+
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'com.palantir.docker'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'dockerdemo'
+//version = '0.0.1'
+
+jar {
+    baseName = 'docker-demo'
+    version =  '0.0.1'
+}
+
+docker {
+    name "${project.group}/${jar.baseName}"
+    files jar.archivePath
+    dockerfile = file('src/main/docker/Dockerfile')
+    buildArgs(['JAR_FILE': "${jar.archiveName}"])
+}
+
+repositories {
+	mavenCentral()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-web')
+	//compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
